@@ -65,4 +65,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('admin/view_order/{id}', [OrderController::class, 'view']);
     Route::put('update_order/{id}', [OrderController::class, 'updateorder']);
     Route::get('order_history', [OrderController::class, 'orderhistory']);
+    Route::get('MarkAsRead_all', [ProductController::class, 'MarkAsRead_all'])->name('MarkAsRead_all');
+    Route::get('unreadNotifications_count', [ProductController::class, 'unreadNotifications_count'])->name('unreadNotifications_count');
+    Route::get('unreadNotifications', [ProductController::class, 'unreadNotifications'])->name('unreadNotifications');
 });

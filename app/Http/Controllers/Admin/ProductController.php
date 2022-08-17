@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class ProductController extends Controller
 {
@@ -46,6 +48,12 @@ class ProductController extends Controller
         $product->meta_keywords = $request->input('meta_keywords');
         $product->meta_desc = $request->input('meta_desc');
         $product->save();
+
+        
+        $user = User::get();
+        $product_id = Product::latest()->first();
+        Notification::send($user, new \App\Notifications\AddProduct($product_id));
+
         return redirect('/dashboard')->with('status', 'Products Added Successfully');
     }
     public function edit($id)
@@ -94,5 +102,35 @@ class ProductController extends Controller
         }
         $products->delete();
         return redirect('/dashboard')->with('status', 'Product deleted Successfully');
+    }
+
+    public function MarkAsRead_all (Request $request)
+    {
+
+        $userUnreadNotification= auth()->user()->unreadNotifications;
+
+        if($userUnreadNotification) {
+            $userUnreadNotification->markAsRead();
+            return back();
+        }
+
+    }
+
+
+    public function unreadNotifications_count()
+
+    {
+        return auth()->user()->unreadNotifications->count();
+    }
+
+    public function unreadNotifications()
+
+    {
+        foreach (auth()->user()->unreadNotifications as $notification){
+
+             return $notification->data['title'];
+
+        }
+
     }
 }
